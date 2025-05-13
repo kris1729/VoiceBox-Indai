@@ -1,26 +1,28 @@
 import express from 'express';
 import {
-  addComment,
-  deleteComment,
-  replyToComment,
-  getCommentsByDepartment
-} from '../controllers/commentController.js';
-
+ 
+  getUserComplaints,
+  getDepartmentComplaints,
+ 
+  generateApplicationContent,
+  sendComplaintAfterReview
+} from '../controllers/complaintController.js';
 import { authenticateUser, authenticateDepartment } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// User adds a comment (review) to a department via complaint ID
-router.post('/', authenticateUser, addComment);
+// **Raise a Complaint (User Auth Required)**
+router.post('/generate-application', authenticateUser, generateApplicationContent);
 
-// User deletes their own comment
-router.delete('/:commentId', authenticateUser, deleteComment);
 
-// Department replies to a specific comment (one-time reply)
-router.post('/reply/:commentId', authenticateDepartment, replyToComment);
 
-// Public or logged-in users can view all comments for a specific department
-router.get('/department/:departmentId', getCommentsByDepartment);
+// **Send Complaint After Review (User Auth Required)**
+router.post('/send-complaint', authenticateUser, sendComplaintAfterReview);
+
+// **Get All Complaints for a User (User Auth Required)**
+router.get('/user', authenticateUser, getUserComplaints);
+
+// **Get All Complaints for a Department (Department Auth Required)**
+router.get('/department', authenticateDepartment, getDepartmentComplaints);
 
 export default router;
-

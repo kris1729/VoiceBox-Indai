@@ -88,27 +88,27 @@ export const replyToComment = async (req, res) => {
   }
 };
 
-// Department deletes their reply
-// export const deleteReply = async (req, res) => {
-//   try {
-//     const { commentId, replyIndex } = req.params;
+// Department deletes their replyc
+export const deleteReply = async (req, res) => {
+  try {
+    const { commentId, replyIndex } = req.params;
 
-//     const comment = await Comment.findById(commentId);
-//     if (!comment) return res.status(404).json({ message: 'Comment not found' });
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
-//     const reply = comment.replies[replyIndex];
-//     if (!reply || String(reply.department) !== String(req.department._id)) {
-//       return res.status(403).json({ message: 'Not authorized to delete this reply' });
-//     }
+    const reply = comment.replies[replyIndex];
+    if (!reply || String(reply.department) !== String(req.department._id)) {
+      return res.status(403).json({ message: 'Not authorized to delete this reply' });
+    }
 
-//     comment.replies.splice(replyIndex, 1);
-//     await comment.save();
+    comment.replies.splice(replyIndex, 1);
+    await comment.save();
 
-//     res.json({ message: 'Reply deleted successfully', comment });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    res.json({ message: 'Reply deleted successfully', comment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 // Get all comments for a specific department (public)
 export const getCommentsByDepartment = async (req, res) => {
