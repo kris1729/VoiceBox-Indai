@@ -14,7 +14,7 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/contact', formData);
+      const res = await axios.post('https://voiceboxindia.onrender.com/api/contact', formData);
       if (res.status === 200) {
         setStatus('Message sent successfully!');
         setFormData({ name: '', email: '', message: '' });

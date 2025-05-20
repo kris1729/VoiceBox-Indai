@@ -17,12 +17,12 @@ dotenv.config();
 
 
 // app.use(cors({
-//   origin: process.env.FRONTEND_URL || 'http://localhost:5000',
+//   origin: process.env.FRONTEND_URL || 'https://voiceboxindia.onrender.com',
 //   credentials: true,
 // }));
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://voiceboxindia.onrender.com",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // Allow sending cookies and authorization headers
     allowedHeaders: "Content-Type,Authorization",

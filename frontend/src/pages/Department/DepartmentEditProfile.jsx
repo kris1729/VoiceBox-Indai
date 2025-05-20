@@ -33,7 +33,7 @@ export default function DepartmentEditProfile() {
     }
 
     axios
-      .get("http://localhost:5000/api/department/profile", {
+      .get("https://voiceboxindia.onrender.com/api/department/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -167,7 +167,7 @@ export default function DepartmentEditProfile() {
       if (form.photo) formData.append("photo", form.photo);
 
       const res = await axios.put(
-        "http://localhost:5000/api/department/profile",
+        "https://voiceboxindia.onrender.com/api/department/profile",
         formData,
         {
           headers: {

@@ -20,7 +20,7 @@ export default function DepartmentVerifyOTP() {
   const handleResendOTP = async () => {
     setResendLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/department/resend-otp', {
+      await axios.post('https://voiceboxindia.onrender.com/api/department/resend-otp', {
         email: form.email,
       });
       toast.success('New OTP has been sent to your email');
@@ -45,7 +45,7 @@ export default function DepartmentVerifyOTP() {
         return;
       }
 
-      const res = await axios.post('http://localhost:5000/api/department/verify-otp', {
+      const res = await axios.post('https://voiceboxindia.onrender.com/api/department/verify-otp', {
         email,
         otp: Number(otp),
       });

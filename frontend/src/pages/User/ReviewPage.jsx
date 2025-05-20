@@ -27,7 +27,7 @@ const ReviewPage = () => {
 
   const fetchDepartment = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/department/${id}`);
+      const res = await axios.get(`https://voiceboxindia.onrender.com/api/department/${id}`);
       setDepartment(res.data.data);
     } catch (err) {
       console.error("Error fetching department", err);
@@ -37,7 +37,7 @@ const ReviewPage = () => {
   const fetchProfile = async () => {
     if (!token) return setUser(null);
     try {
-      const res = await axios.get("http://localhost:5000/api/user/profile", {
+      const res = await axios.get("https://voiceboxindia.onrender.com/api/user/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
@@ -48,7 +48,7 @@ const ReviewPage = () => {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comment/${id}`);
+      const res = await axios.get(`https://voiceboxindia.onrender.com/api/comment/${id}`);
       setComments(res.data.comments || res.data.data || []);
     } catch (err) {
       console.error("Error fetching comments", err);
@@ -63,7 +63,7 @@ const ReviewPage = () => {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/comment/${id}`,
+        `https://voiceboxindia.onrender.com/api/comment/${id}`,
         {
           complaintId,
           text: newComment.trim(),
@@ -86,7 +86,7 @@ const ReviewPage = () => {
     if (!token) return navigate("/login");
 
     try {
-      await axios.delete(`http://localhost:5000/api/comment/${id}/${commentId}`, {
+      await axios.delete(`https://voiceboxindia.onrender.com/api/comment/${id}/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchComments();

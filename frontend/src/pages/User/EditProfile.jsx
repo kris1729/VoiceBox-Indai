@@ -29,7 +29,7 @@ export default function EditProfile() {
     }
 
     axios
-      .get('http://localhost:5000/api/user/profile', {
+      .get('https://voiceboxindia.onrender.com/api/user/profile', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -104,7 +104,7 @@ export default function EditProfile() {
       if (form.photo) formData.append('photo', form.photo);
 
       const res = await axios.put(
-        'http://localhost:5000/api/user/profile',
+        'https://voiceboxindia.onrender.com/api/user/profile',
         formData,
         {
           headers: {

@@ -23,7 +23,7 @@ export default function DepartmentSignin() {
     setNeedsVerification(false);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/department/signin', form);
+      const res = await axios.post('https://voiceboxindia.onrender.com/api/department/signin', form);
       
       const { token, requiresOTP } = res.data;
       const departmentToken = token;

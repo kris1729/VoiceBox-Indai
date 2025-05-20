@@ -35,7 +35,7 @@ export default function SignupUser() {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5000/api/user/signup', form);
+      await axios.post('https://voiceboxindia.onrender.com/api/user/signup', form);
       setSuccess('Signup successful! Please check your email for the OTP.');
       setTimeout(() => navigate('/verify-otp', { state: { email: form.email } }), 2000);
     } catch (err) {

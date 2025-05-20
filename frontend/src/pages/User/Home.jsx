@@ -16,7 +16,7 @@ const Home = () => {
   const fetchDepartments = async () => {
     setLoading(true);
     try {
-      let url = "http://localhost:5000/api/department/departments?";
+      let url = "https://voiceboxindia.onrender.com/api/department/departments?";
       if (state) url += `state=${encodeURIComponent(state)}&`;
       if (district) url += `district=${encodeURIComponent(district)}&`;
       if (searchTerm) url += `search=${encodeURIComponent(searchTerm)}&`;

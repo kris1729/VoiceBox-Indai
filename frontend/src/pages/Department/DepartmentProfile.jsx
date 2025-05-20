@@ -32,7 +32,7 @@ export default function DepartmentProfile() {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/api/comment/reply/${commentId}`,
+                `https://voiceboxindia.onrender.com/api/comment/reply/${commentId}`,
                 { replyText: reply[commentId] },
                 {
                     headers: {
@@ -90,14 +90,14 @@ export default function DepartmentProfile() {
         }
 
         try {
-            const res = await axios.get('http://localhost:5000/api/department/profile', {
+            const res = await axios.get('https://voiceboxindia.onrender.com/api/department/profile', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDepartment(res.data.data);
 
             const url = search.trim()
-                ? `http://localhost:5000/api/complaint/department?search=${encodeURIComponent(search.trim())}`
-                : 'http://localhost:5000/api/complaint/department';
+                ? `https://voiceboxindia.onrender.com/api/complaint/department?search=${encodeURIComponent(search.trim())}`
+                : 'https://voiceboxindia.onrender.com/api/complaint/department';
 
             const complaintsRes = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -107,7 +107,7 @@ export default function DepartmentProfile() {
             setComplaints(complaintData);
 
             const departmentId = res.data.data._id;
-            const allCommentsRes = await axios.get(`http://localhost:5000/api/comment/${departmentId}`);
+            const allCommentsRes = await axios.get(`https://voiceboxindia.onrender.com/api/comment/${departmentId}`);
             setComments(allCommentsRes.data.data);
             setError('');
         } catch (err) {

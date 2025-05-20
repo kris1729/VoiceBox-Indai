@@ -19,7 +19,7 @@ import DepartmentProfile from './pages/Department/DepartmentProfile.jsx';
 import DepartmentEditProfile from './pages/Department/DepartmentEditProfile.jsx';
 import DepartmentLogin from './pages/Department/DepartmentSignin.jsx';
 import DepartmentSignup from './pages/Department/DepartmentSignup.jsx';
-import DepartmentVerifyOTP from './pages/Department/DepartmentVerifyOtp.jsx';
+import DepartmentVerifyOTP from './pages/Department/DepartmentVerifyOTP.jsx';
 
 function App() {
   return (

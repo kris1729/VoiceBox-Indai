@@ -50,7 +50,7 @@ const GenerateApplication = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/complaint/generate-application",
+        "https://voiceboxindia.onrender.com/api/complaint/generate-application",
         {
           selectedDepartmentId: departmentId,
           problem,
@@ -79,7 +79,7 @@ const GenerateApplication = () => {
   const handleSendComplaint = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/complaint/send-complaint",
+        "https://voiceboxindia.onrender.com/api/complaint/send-complaint",
         {
           departmentId,
           problem,

@@ -19,10 +19,10 @@ export default function Profile() {
         const fetchData = async () => {
             try {
                 const [userRes, complaintRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/user/profile', {
+                    axios.get('https://voiceboxindia.onrender.com/api/user/profile', {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get('http://localhost:5000/api/complaint/user', {
+                    axios.get('https://voiceboxindia.onrender.com/api/complaint/user', {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);
@@ -44,7 +44,7 @@ export default function Profile() {
     const deleteComplaint = async (complaintId) => {
         const token = localStorage.getItem('token');
         try {
-            const res = await axios.delete(`http://localhost:5000/api/complaint/delete/${complaintId}`, {
+            const res = await axios.delete(`https://voiceboxindia.onrender.com/api/complaint/delete/${complaintId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

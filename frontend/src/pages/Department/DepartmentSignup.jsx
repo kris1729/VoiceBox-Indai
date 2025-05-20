@@ -55,7 +55,7 @@ export default function DepartmentSignup() {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5000/api/department/signup', form);
+      await axios.post('https://voiceboxindia.onrender.com/api/department/signup', form);
       setSuccess('Signup successful! Please check your email for the OTP.');
       setTimeout(() => navigate('/department/verify-otp'), 2000);
     } catch (err) {
