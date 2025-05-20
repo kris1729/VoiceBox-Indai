@@ -17,7 +17,8 @@ const departmentSchema = new mongoose.Schema({
   phone: { type: String },
   whatsapp: { type: String },
   telephone: { type: String },
-  photo: { type: String },
+    photo: { type: String },
+    photoFileId: { type: String },
   
 }, { timestamps: true });
 

@@ -7,6 +7,14 @@ const complaintSchema = new mongoose.Schema({
   problem: { type: String, required: true },
   address: { type: String, required: true },
   phone: { type: String, required: true },
+  photo: {
+    type: String,
+    default: '',
+  },
+  photoFileId: {
+    type: String,
+    default: '',
+  },
   englishApplication: { type: String },
   hindiApplication: { type: String },
   status: { type: String, default: 'draft' },  // Add this to track whether the complaint is final or draft

@@ -2,7 +2,7 @@
 
 
 import express from 'express';
-import { signup, signin, verifyOTP, getProfile, updateProfile, getUserComplaints } from '../controllers/userController.js';
+import { signup, signin, verifyOTP, getProfile, updateProfile, getUserComplaints ,regenerateUserOTP} from '../controllers/userController.js';
 import { authenticateUser } from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/uploadMiddleware.js';
 
@@ -14,5 +14,6 @@ router.post('/signin', signin);
 router.get('/profile', authenticateUser, getProfile);
 router.put('/profile', authenticateUser, upload.single('photo'), updateProfile);
 router.get('/complaints', authenticateUser, getUserComplaints);
+router.post('/resend-otp', regenerateUserOTP);
 
 export default router;

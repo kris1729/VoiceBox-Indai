@@ -1,77 +1,60 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
-import Home from "./pages/Home";
-import AboutUs from "./pages/AboutUs";
-import ContactUs from "./pages/ContactUs";
-import PolicyPage from "./pages/PolicyPage";
-import ProfilePage from "./pages/ExportDetails";
+import { Routes, Route } from 'react-router-dom';
+import UserLayout from './components/Layout.jsx';
+import DepartmentLayout from './components/DepartmentLayout.jsx';
 
-import SignInExpert from "./pages/SignInExpert";
+import GenerateApplication from "./pages/User/GenerateApplication.jsx";
+import Home from './pages/User/Home.jsx';
+import About from './pages/User/About.jsx';
+import Contact from './pages/User/Contact.jsx';
+import Privacy from './pages/User/Privacy.jsx';
+import LoginUser from './pages/User/LoginUser.jsx';
+import SignupUser from './pages/User/SignupUser.jsx';
+import VerifyOtp from './pages/User/VerifyOtp.jsx';
+import Profile from './pages/User/Profile.jsx';
+import EditProfile from './pages/User/EditProfile.jsx';
+import ReviewPage from "./pages/User/ReviewPage.jsx";
 
-import SignUpExpert from "./pages/SignUpExpert";
+import DepartmentDashboard from './pages/Department/Dashboard.jsx';
+import DepartmentProfile from './pages/Department/DepartmentProfile.jsx';
+import DepartmentEditProfile from './pages/Department/DepartmentEditProfile.jsx';
+import DepartmentLogin from './pages/Department/DepartmentSignin.jsx';
+import DepartmentSignup from './pages/Department/DepartmentSignup.jsx';
+import DepartmentVerifyOTP from './pages/Department/DepartmentVerifyOtp.jsx';
 
-
-
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-// import { UserProvider } from './context/UserContext';
-import AddService from "./pages/AddService";
-import ExportDetails from "./pages/ExportDetails";
-
-import ServiceDetailsPage from "./pages/ServiceDetailsPage"; 
-
-import ProfileExpert from "./pages/ProfileExpert";
-import EditServicePage from "./pages/EditServicePage"; // adjust the path if different
-import BookNowPage from "./pages/BookNowPage";
-
-
-// Inside your <Routes>
-
-const App = () => {
+function App() {
   return (
-    
-      <Router>
-        <Routes>
-       
-
-          {/* Layout-wrapped routes */}
-          <Route path="/" element={<Layout />}>
+    <>
+      {/* User Routes */}
+      <Routes>
+        <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
-            <Route path="about" element={<AboutUs />} />
-            <Route path="contact" element={<ContactUs />} />
-            <Route path="policy" element={<PolicyPage/>}/>
-            <Route path="profile" element={<ProfilePage />} />
-        
-            <Route path="signin/expert" element={<SignInExpert />} />
-     
-            <Route path="signup/expert" element={<SignUpExpert />} />
-            <Route path="/profile/:id" element={<ProfilePage />} />
-           
-           
-           
-            <Route path="/profileExport/:id" element={<ProfileExpert/>} /> {/* ✅ Route for expert */}
-            <Route path="/createService/:id" element={<AddService />} />
-            <Route path="/expert-details/:id" element={<ExportDetails />} /> 
-           
-            <Route path="/service/:id" element={<ServiceDetailsPage />} />
-            <Route path="/service/update/:id" element={<EditServicePage />} />
-            <Route path="/book/:id" element={<BookNowPage />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="login" element={<LoginUser />} />
+          <Route path="signup" element={<SignupUser />} />
+          <Route path="verify-otp" element={<VerifyOtp />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="edit-profile" element={<EditProfile />} />
+          <Route path="complaint/raise/:id" element={<GenerateApplication />} />
+          <Route path="review/:id" element={<ReviewPage />} />
+        </Route>
 
-          
-
-
-          </Route>
-        </Routes>
-        <ToastContainer position="top-center" />
-      </Router>
-   
+        {/* Department Routes  */}
+        <Route path="/department" element={<DepartmentLayout />}>
+          <Route index element={<DepartmentDashboard />} />
+          <Route path="login" element={<DepartmentLogin />} />
+          <Route path="signup" element={<DepartmentSignup />} />
+          <Route path="verify-otp" element={<DepartmentVerifyOTP />} />
+          <Route path="profile" element={<DepartmentProfile />} />
+           <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="edit-profile" element={<DepartmentEditProfile />} />
+        </Route>
+      </Routes>
+    </>
   );
-};
+}
 
 export default App;
-
-
-
-

@@ -114,6 +114,42 @@ export const verifyOTP = async (req, res) => {
   }
 };
 
+
+
+// === resend otp =========
+
+export const regenerateUserOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the user is already verified
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'Email already verified. Please login.' });
+    }
+
+    // Generate a new OTP
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationOTP = newOtp;
+    user.otpExpiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes from now
+    await user.save();
+
+    // Send the new OTP via email
+    const emailSubject = 'New OTP for Email Verification';
+    const emailBody = `Your new OTP for email verification is: ${newOtp}. It will expire in 15 minutes.`;
+    await sendEmail(user.email, emailSubject, emailBody);
+
+    res.json({ message: 'New OTP sent to your email.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to regenerate OTP. Please try again.' });
+  }
+};
+
 // ==================== Signin ====================
 export const signin = async (req, res) => {
   try {

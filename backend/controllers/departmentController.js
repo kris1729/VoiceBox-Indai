@@ -7,6 +7,7 @@ import sendEmail from '../utils/sendEmail.js';
 import generateOTP from '../utils/generateOTP.js';
 import fs from 'fs';
 import path from 'path';
+import mongoose from 'mongoose';
 
 const validatePassword = (password) => {
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{6,}$/;
@@ -82,6 +83,44 @@ export const signupDepartment = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// ================== regenrate otp ==================
+
+export const regenerateDeptOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the department exists
+    const dept = await Department.findOne({ email });
+    if (!dept) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+
+    // Check if the department is already verified
+    if (dept.isVerified) {
+      return res.status(400).json({ message: 'Email already verified. Please login.' });
+    }
+
+    // Generate a new OTP
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    dept.verificationOTP = newOtp;
+    dept.otpExpiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes from now
+    await dept.save();
+
+    // Send the new OTP via email
+    const emailSubject = 'New OTP for Email Verification';
+    const emailBody = `Your new OTP for email verification is: ${newOtp}. It will expire in 15 minutes.`;
+    await sendEmail(dept.email, emailSubject, emailBody);
+
+    res.json({ message: 'New OTP sent to your email.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to regenerate OTP. Please try again.' });
+  }
+};
+
+
+
+
 
 // ==================== Verify Department OTP (Auto-login) ====================
 export const verifyDeptOTP = async (req, res) => {
@@ -190,8 +229,38 @@ export const getDepartmentProfile = async (req, res) => {
       return res.status(400).json({ message: 'Invalid request. Department ID missing.' });
     }
 
-    const department = await Department.findById(departmentId)
-      .select('-password -verificationOTP -otpExpiresAt');
+    const departments = await Department.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(departmentId) } },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'department',
+          as: 'comments'
+        }
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$comments' }, 0] },
+              then: { $avg: '$comments.rating' },
+              else: 0
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          password: 0,
+          verificationOTP: 0,
+          otpExpiresAt: 0,
+          comments: 0
+        }
+      }
+    ]);
+
+    const department = departments[0];
 
     if (!department) {
       return res.status(404).json({ message: 'Department not found' });
@@ -320,8 +389,39 @@ export const updateDepartmentProfile = async (req, res) => {
 // ==================== Get Department by ID (Public) ====================
 export const getDepartmentById = async (req, res) => {
   try {
-    const dept = await Department.findById(req.params.id)
-      .select('-password -verificationOTP -otpExpiresAt');
+    const departments = await Department.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(req.params.id) } },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'department',
+          as: 'comments'
+        }
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$comments' }, 0] },
+              then: { $avg: '$comments.rating' },
+              else: 0
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          password: 0,
+          verificationOTP: 0,
+          otpExpiresAt: 0,
+          comments: 0
+        }
+      }
+    ]);
+
+    const dept = departments[0];
+
     if (!dept) {
       return res.status(404).json({ message: 'Department not found' });
     }
@@ -332,31 +432,60 @@ export const getDepartmentById = async (req, res) => {
 };
 
 // ==================== Filter & Search Departments (Public) ====================
+// ==================== Filter & Search Departments (Public) ====================
 export const filterAndSearchDepartments = async (req, res) => {
   try {
-    let { state, district, search } = req.query;
+    const { state, district, search } = req.query;
 
-    if (req.user) {
-      state = req.user.state || state;
-      district = req.user.district || district;
-    }
+    // Prepare the base filter
+    let filter = {};
+    if (state) filter.state = state;
+    if (district) filter.district = district;
 
-    if (!state) state = "Uttar Pradesh";
-    if (!district) district = "Lucknow";
+    // Use aggregation pipeline to calculate average rating
+    let departments = await Department.aggregate([
+      { $match: filter },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'department',
+          as: 'comments'
+        }
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$comments' }, 0] },
+              then: { $avg: '$comments.rating' },
+              else: 0
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          password: 0,
+          verificationOTP: 0,
+          otpExpiresAt: 0,
+          comments: 0
+        }
+      }
+    ]);
 
-    let departments = await Department.find({ state, district })
-      .select('-password -verificationOTP -otpExpiresAt');
-
+    // Apply search filter within the current state and district context
     if (search) {
       const regex = new RegExp(search, 'i');
-      departments = departments.filter(d =>
-        regex.test(d.name) ||
-        d.workingAreas.some(area => regex.test(area))
+      departments = departments.filter(dept => 
+        regex.test(dept.name) || 
+        dept.workingAreas.some(area => regex.test(area))
       );
     }
 
-    res.json(departments);
+    res.status(200).json(departments);
   } catch (err) {
+    console.error('Error in filterAndSearchDepartments:', err);
     res.status(500).json({ error: err.message });
   }
 };

@@ -3,6 +3,7 @@ import {
   signupDepartment,
   signinDepartment,
   verifyDeptOTP,
+  regenerateDeptOTP,
   getDepartmentById,
   updateDepartmentProfile,
   getDepartmentProfile,
@@ -11,13 +12,16 @@ import {
 import { authenticateDepartment } from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/uploadMiddleware.js';
 
+
 const router = express.Router();
+
 
 // Department Signup
 router.post('/signup', signupDepartment);
 
 // Department Email OTP Verification
 router.post('/verify-otp', verifyDeptOTP);
+router.post('/resend-otp', regenerateDeptOTP);
 
 // Department Signin
 router.post('/signin', signinDepartment);
@@ -29,7 +33,7 @@ router.get('/profile', authenticateDepartment, getDepartmentProfile);
 router.put('/profile', authenticateDepartment, upload.single('photo'), updateDepartmentProfile);
 
 // Filter and Search Departments
-router.get('/search', filterAndSearchDepartments);
+router.get('/departments', filterAndSearchDepartments);
 
 // Get Department by ID (public) → moved last
 router.get('/:id', getDepartmentById);

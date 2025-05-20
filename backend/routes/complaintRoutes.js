@@ -5,7 +5,8 @@ import {
   getDepartmentComplaints,
  
   generateApplicationContent,
-  sendComplaintAfterReview
+  sendComplaintAfterReview,
+  deleteComplaint
 } from '../controllers/complaintController.js';
 import { authenticateUser, authenticateDepartment } from '../middlewares/authMiddleware.js';
 
@@ -24,5 +25,7 @@ router.get('/user', authenticateUser, getUserComplaints);
 
 // **Get All Complaints for a Department (Department Auth Required)**
 router.get('/department', authenticateDepartment, getDepartmentComplaints);
+
+router.delete('/delete/:complaintId', authenticateUser, deleteComplaint);
 
 export default router;

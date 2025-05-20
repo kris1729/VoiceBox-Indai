@@ -49,30 +49,32 @@ export const generateApplicationContent = async (req, res) => {
   }
 };
 
-// **Send Complaint After Review (Final)**
-// **Send Complaint After Review (Final Save)**
-// **Send Complaint After Review (Final Save)**
+
 export const sendComplaintAfterReview = async (req, res) => {
   try {
     const user = req.user;
-    const {
-      departmentId,
-      problem,
-      address,
-      phone,
-      englishApplication,
-      hindiApplication
-    } = req.body;
+    const { departmentId, problem, address, phone, englishApplication, hindiApplication } = req.body;
 
-    // Validate required fields
     if (!departmentId || !problem || !address || !phone || !englishApplication || !hindiApplication) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Generate unique complaint ID
-    const complaintId = generateComplaintId();
+    // Handle photo upload
+    let photoUrl = '';
+    let photoFileId = '';
+    if (req.file) {
+      const uploaded = await imagekit.upload({
+        file: fs.readFileSync(req.file.path),
+        fileName: `complaint_${user._id}_${Date.now()}${path.extname(req.file.originalname)}`,
+        folder: "/complaints",
+      });
 
-    // Create the final complaint record in the database
+      fs.unlinkSync(req.file.path);
+      photoUrl = uploaded.url;
+      photoFileId = uploaded.fileId;
+    }
+
+    const complaintId = generateComplaintId();
     const complaint = new Complaint({
       complaintId,
       user: user._id,
@@ -82,26 +84,26 @@ export const sendComplaintAfterReview = async (req, res) => {
       phone,
       englishApplication,
       hindiApplication,
+      photo: photoUrl,
+      photoFileId: photoFileId,
       status: 'final'
     });
 
     await complaint.save();
 
-    // Find the department for sending the email
     const department = await Department.findById(departmentId);
     if (!department) {
       return res.status(404).json({ message: 'Department not found' });
     }
 
-    // **Send the final complaint email**
     await sendComplaintEmail({
       toUser: user.email,
       toDept: department.email,
       userName: user.name,
       deptName: department.name,
       complaintId,
-      englishContent: englishApplication,  // This should match exactly
-      hindiContent: hindiApplication,      // This should match exactly
+      englishContent: englishApplication,
+      hindiContent: hindiApplication,
       address,
       phone
     });
@@ -112,6 +114,43 @@ export const sendComplaintAfterReview = async (req, res) => {
     res.status(500).json({ error: 'Something went wrong while sending the complaint.' });
   }
 };
+
+
+
+
+
+
+// delte complain by user private 
+export const deleteComplaint = async (req, res) => {
+  try {
+    const user = req.user;
+    const { complaintId } = req.params;
+
+    const complaint = await Complaint.findOne({ complaintId, user: user._id });
+    if (!complaint) {
+      return res.status(404).json({ message: 'Complaint not found or you do not have permission to delete it.' });
+    }
+
+    // Delete the photo from ImageKit if exists
+    if (complaint.photoFileId) {
+      try {
+        await imagekit.deleteFile(complaint.photoFileId);
+      } catch (err) {
+        console.error("Failed to delete complaint photo from ImageKit:", err.message);
+      }
+    }
+
+    // Delete the complaint from the database
+    await complaint.deleteOne();
+
+    res.json({ message: 'Complaint deleted successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong while deleting the complaint.' });
+  }
+};
+
+
 
 // **Get All Complaints for a Logged-In User**
 export const getUserComplaints = async (req, res) => {
@@ -150,7 +189,7 @@ export const getDepartmentComplaints = async (req, res) => {
       ];
     }
 
-    const complaints = await Complaint.find(filter).populate('user', 'name email');
+    const complaints = await Complaint.find(filter).populate('user', 'name email photo');
     res.json(complaints);
   } catch (err) {
     res.status(500).json({ error: 'Error fetching complaints for department.' });

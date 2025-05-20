@@ -7,21 +7,16 @@ export const addComment = async (req, res) => {
     const { departmentId } = req.params;
     const { complaintId, text, rating } = req.body;
 
-    const complaint = await Complaint.findOne({ complaintId }).populate('department');
+    // Check if complaint exists and is linked to the department
+    const complaint = await Complaint.findOne({ complaintId }).populate("department");
     if (!complaint || String(complaint.department._id) !== departmentId) {
-      return res.status(404).json({ message: 'Complaint not found for this department.' });
+      return res.status(404).json({ message: "Complaint not found for this department." });
     }
 
-    const existing = await Comment.findOne({
-      complaint: complaint._id,
-      user: req.user._id,
-    });
+    // ❌ Remove restriction on one comment per complaint
+    // ✅ Allow multiple comments on the same complaint
 
-    if (existing) {
-      return res.status(400).json({ message: 'You have already commented on this complaint.' });
-    }
-
-    const comment = new Comment({
+    const newComment = new Comment({
       complaint: complaint._id,
       user: req.user._id,
       department: departmentId,
@@ -29,12 +24,15 @@ export const addComment = async (req, res) => {
       rating,
     });
 
-    await comment.save();
-    res.status(201).json({ message: 'Comment added successfully', comment });
+    await newComment.save();
+
+    res.status(201).json({ message: "Comment added successfully", comment: newComment });
   } catch (err) {
+    console.error("Error adding comment:", err.message);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // User deletes their own comment
 export const deleteComment = async (req, res) => {
@@ -71,13 +69,13 @@ export const replyToComment = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to reply to this comment' });
     }
 
-    const alreadyReplied = comment.replies.some(
-      (reply) => String(reply.department) === String(req.department._id)
-    );
+    // const alreadyReplied = comment.replies.some(
+    //   (reply) => String(reply.department) === String(req.department._id)
+    // );
 
-    if (alreadyReplied) {
-      return res.status(400).json({ message: 'You have already replied to this comment' });
-    }
+    // if (alreadyReplied) {
+    //   return res.status(400).json({ message: 'You have already replied to this comment' });
+    // }
 
     comment.replies.push({ text: replyText, department: req.department._id });
     await comment.save();
@@ -116,9 +114,9 @@ export const getCommentsByDepartment = async (req, res) => {
     const { departmentId } = req.params;
 
     const comments = await Comment.find({ department: departmentId })
-      .populate('user', 'name')
-      .populate('replies.department', 'name');
-
+  .populate('user', 'name photo')
+  .populate('complaint', 'complaintId')
+  .populate('replies.department', 'name');
     res.json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
